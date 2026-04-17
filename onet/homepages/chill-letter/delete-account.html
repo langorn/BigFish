@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chill Letter | Account Deletion Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --color-cream: #F8F5EE;
+            --color-olive: #5F7053;
+            --color-sage: #9AB29A;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--color-cream);
+            background-image: url("https://www.transparenttextures.com/patterns/natural-paper.png");
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .serif { font-family: 'Playfair Display', serif; }
+        .glass {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 8px 32px 0 rgba(95, 112, 83, 0.1);
+        }
+        .btn-olive {
+            background-color: var(--color-olive);
+            color: white;
+            transition: all 0.3s ease;
+        }
+        .btn-olive:hover {
+            background-color: #4A5841;
+            transform: translateY(-1px);
+        }
+        .hidden { display: none; }
+        .loading-spinner {
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 3px solid #fff;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body class="p-4">
+    <div id="app" class="max-w-md w-full">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="serif text-4xl mb-2 text-[#4A4B46]">Chill Letter</h1>
+            <p class="text-gray-500 text-sm tracking-widest uppercase">Privacy & Soul Portal</p>
+        </div>
+
+        <!-- Login Card -->
+        <div id="login-card" class="glass rounded-3xl p-8 animate-fade-in hidden">
+            <h2 class="serif text-2xl mb-6 text-center">Sign in to continue</h2>
+            
+            <button id="google-login" class="w-full flex items-center justify-center gap-3 bg-white border border-gray-200 py-3 rounded-xl mb-4 hover:bg-gray-50 transition-colors">
+                <img src="https://www.google.com/favicon.ico" class="w-5 h-5" alt="Google">
+                <span class="font-semibold text-gray-700">Continue with Google</span>
+            </button>
+
+            <div class="flex items-center gap-4 my-6">
+                <div class="h-[1px] bg-gray-200 flex-1"></div>
+                <span class="text-xs text-gray-400 font-bold tracking-widest">OR EMAIL</span>
+                <div class="h-[1px] bg-gray-200 flex-1"></div>
+            </div>
+
+            <form id="email-login-form">
+                <div class="mb-4">
+                    <input type="email" id="email" placeholder="Email Address" required
+                        class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#5F7053] bg-white/50">
+                </div>
+                <div class="mb-6">
+                    <input type="password" id="password" placeholder="Password" required
+                        class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#5F7053] bg-white/50">
+                </div>
+                <button type="submit" id="login-btn" class="w-full btn-olive py-4 rounded-xl font-bold tracking-widest text-xs uppercase">
+                    Access Dashboard
+                </button>
+            </form>
+            <p id="login-error" class="text-red-500 text-xs mt-4 text-center hidden"></p>
+        </div>
+
+        <!-- Dashboard Card -->
+        <div id="dashboard-card" class="glass rounded-3xl p-8 hidden">
+            <div class="text-center mb-8">
+                <div class="w-20 h-20 bg-sage rounded-full mx-auto mb-4 flex items-center justify-center text-white text-2xl font-bold" id="user-initial">?</div>
+                <h2 id="user-email" class="text-lg font-semibold text-gray-700 truncate">user@example.com</h2>
+                <button id="logout-btn" class="text-xs text-gray-400 mt-2 hover:text-red-400 underline tracking-widest uppercase">Logout</button>
+            </div>
+
+            <div class="bg-red-50 border border-red-100 rounded-2xl p-6">
+                <h3 class="text-red-700 font-bold text-sm tracking-widest uppercase mb-4">Danger Zone</h3>
+                <p class="text-red-600 text-xs leading-relaxed mb-6">Account deletion is irreversible.</p>
+                <button id="delete-init-btn" class="w-full bg-white border-2 border-red-200 text-red-500 py-3 rounded-xl font-bold text-sm hover:bg-red-500 hover:text-white transition-all uppercase tracking-widest">
+                    Delete Account
+                </button>
+            </div>
+        </div>
+
+        <!-- Initial Loader -->
+        <div id="initial-loader" class="text-center">
+            <div class="loading-spinner border-sage border-t-olive mx-auto mb-4 w-12 h-12"></div>
+            <p class="text-olive text-xs tracking-widest uppercase">Connecting to Horizon...</p>
+        </div>
+
+        <!-- Modals and Overlays (Confirmation, Status) -->
+        <div id="confirm-modal" class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 hidden z-50">
+            <div class="glass max-w-sm w-full rounded-3xl p-8">
+                <h2 class="serif text-2xl text-red-600 mb-4">Are you certain?</h2>
+                <input type="text" id="confirm-input" placeholder="Type DELETE to confirm" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-red-400 bg-white mb-6">
+                <div class="flex gap-3">
+                    <button id="cancel-delete" class="flex-1 bg-gray-100 py-3 rounded-xl text-gray-500 font-bold text-sm uppercase">Cancel</button>
+                    <button id="confirm-delete-btn" disabled class="flex-1 bg-red-100 text-red-400 py-3 rounded-xl font-bold text-sm uppercase cursor-not-allowed">Execute</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="status-overlay" class="fixed inset-0 flex items-center justify-center p-4 hidden z-[60]">
+            <div id="status-card" class="glass max-w-sm w-full rounded-3xl p-8 text-center shadow-2xl scale-95 opacity-0 transition-all duration-300">
+                <div id="status-icon" class="text-4xl mb-4">✨</div>
+                <h2 id="status-title" class="serif text-2xl mb-2">Notice</h2>
+                <p id="status-message" class="text-gray-600 text-sm mb-6"></p>
+                <button id="status-close" class="w-full btn-olive py-4 rounded-xl font-bold text-xs uppercase">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+        // Constants
+        const SUPABASE_URL = 'https://uqcvyifjdvimbfwbawha.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_hPRhDt4UOkWIAqzIhP_D_w_iPeWbH9X';
+        
+        console.log("Initializing Supabase...");
+        const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        console.log("Supabase client initialized.");
+
+        // UI Handlers
+        const loginCard = document.getElementById('login-card');
+        const dashboardCard = document.getElementById('dashboard-card');
+        const initialLoader = document.getElementById('initial-loader');
+
+        async function updateUI() {
+            try {
+                const { data: { user } } = await _supabase.auth.getUser();
+                console.log("Current user state check:", user ? user.email : "Logged Out");
+                
+                initialLoader.classList.add('hidden');
+                
+                if (user) {
+                    loginCard.classList.add('hidden');
+                    dashboardCard.classList.remove('hidden');
+                    document.getElementById('user-email').innerText = user.email;
+                    document.getElementById('user-initial').innerText = (user.email[0] || '?').toUpperCase();
+                } else {
+                    loginCard.classList.remove('hidden');
+                    dashboardCard.classList.add('hidden');
+                }
+            } catch (err) {
+                console.error("UpdateUI Error:", err);
+            }
+        }
+
+        // --- Event Listeners ---
+        document.getElementById('google-login').addEventListener('click', async () => {
+            console.log("Initiating Google Login...");
+            await _supabase.auth.signInWithOAuth({
+                provider: 'google',
+                options: { redirectTo: window.location.origin + window.location.pathname }
+            });
+        });
+
+        document.getElementById('email-login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const btn = document.getElementById('login-btn');
+            
+            console.log("Attempting Email Login...");
+            btn.innerHTML = '<div class="loading-spinner mx-auto"></div>';
+            btn.disabled = true;
+
+            const { error } = await _supabase.auth.signInWithPassword({ email, password });
+            
+            if (error) {
+                console.error("Login failed:", error.message);
+                const errEl = document.getElementById('login-error');
+                errEl.innerText = error.message;
+                errEl.classList.remove('hidden');
+                btn.innerHTML = 'Access Dashboard';
+                btn.disabled = false;
+            }
+        });
+
+        document.getElementById('logout-btn').addEventListener('click', async () => {
+            console.log("Logout button clicked. Signing out...");
+            const { error } = await _supabase.auth.signOut();
+            if (error) console.error("SignOut Error:", error.message);
+        });
+
+        // Modal Logic
+        const confirmModal = document.getElementById('confirm-modal');
+        document.getElementById('delete-init-btn').addEventListener('click', () => confirmModal.classList.remove('hidden'));
+        document.getElementById('cancel-delete').addEventListener('click', () => confirmModal.classList.add('hidden'));
+
+        document.getElementById('confirm-input').addEventListener('input', (e) => {
+            const btn = document.getElementById('confirm-delete-btn');
+            if (e.target.value === 'DELETE') {
+                btn.disabled = false;
+                btn.classList.remove('bg-red-100', 'text-red-400', 'cursor-not-allowed');
+                btn.classList.add('bg-red-500', 'text-white');
+            } else {
+                btn.disabled = true;
+                btn.classList.add('bg-red-100', 'text-red-400', 'cursor-not-allowed');
+                btn.classList.remove('bg-red-500', 'text-white');
+            }
+        });
+
+        document.getElementById('confirm-delete-btn').addEventListener('click', async () => {
+            const btn = document.getElementById('confirm-delete-btn');
+            console.log("Initiating Account Deletion Request...");
+            btn.innerHTML = '<div class="loading-spinner mx-auto"></div>';
+            btn.disabled = true;
+
+            try {
+                const { data: { session } } = await _supabase.auth.getSession();
+                const response = await fetch(`${SUPABASE_URL}/functions/v1/delete-auth-user`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${session.access_token}` }
+                });
+
+                const result = await response.json();
+                if (response.ok && result.success) {
+                    console.log("Account deletion confirmed by server.");
+                    showStatus('Success', 'Account deleted.', '✨', true);
+                    await _supabase.auth.signOut();
+                } else {
+                    console.error("Deletion failed:", result.error);
+                    showStatus('Failed', result.error || 'Server error', '🥀', false);
+                }
+            } catch (err) {
+                console.error("Network Error during deletion:", err);
+                showStatus('Error', err.message, '⚠️', false);
+            } finally {
+                btn.innerHTML = 'Execute';
+                confirmModal.classList.add('hidden');
+            }
+        });
+
+        function showStatus(title, msg, icon, isSuccess) {
+            const overlay = document.getElementById('status-overlay');
+            const card = document.getElementById('status-card');
+            document.getElementById('status-title').innerText = title;
+            document.getElementById('status-message').innerText = msg;
+            document.getElementById('status-icon').innerText = icon;
+            overlay.classList.remove('hidden');
+            setTimeout(() => card.classList.remove('opacity-0', 'scale-95'), 10);
+        }
+
+        document.getElementById('status-close').addEventListener('click', () => {
+            document.getElementById('status-overlay').classList.add('hidden');
+        });
+
+        // Initialize check
+        updateUI();
+
+        // Single Point of Truth for Auth changes
+        _supabase.auth.onAuthStateChange((event) => {
+            console.log("Auth Event Triggered:", event);
+            updateUI();
+        });
+    </script>
+</body>
+</html>
