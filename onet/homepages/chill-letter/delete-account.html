@@ -148,7 +148,7 @@
         const loginCard = document.getElementById('login-card');
         const dashboardCard = document.getElementById('dashboard-card');
         const initialLoader = document.getElementById('initial-loader');
-        const redirectTo = 'https://thankful-beach-08fca6a1e.6.azurestaticapps.net/chill-letter/delete-account.html';
+        const redirectToUrl = 'https://thankful-beach-08fca6a1e.6.azurestaticapps.net/chill-letter/delete-account.html';
         
         async function updateUI() {
             try {
@@ -176,7 +176,7 @@
             console.log("Initiating Google Login...");
             await _supabase.auth.signInWithOAuth({
                 provider: 'google',
-                options: { redirectTo: window.location.origin + window.location.pathname }
+                options: { redirectTo: redirectToUrl }
             });
         });
 
