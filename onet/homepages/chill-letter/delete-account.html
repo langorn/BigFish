@@ -148,7 +148,8 @@
         const loginCard = document.getElementById('login-card');
         const dashboardCard = document.getElementById('dashboard-card');
         const initialLoader = document.getElementById('initial-loader');
-
+        const redirectTo = 'https://thankful-beach-08fca6a1e.6.azurestaticapps.net/chill-letter/delete-account.html';
+        
         async function updateUI() {
             try {
                 const { data: { user } } = await _supabase.auth.getUser();
