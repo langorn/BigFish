@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chill Letter | Email Verified</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --color-cream: #F8F5EE;
+            --color-olive: #5F7053;
+            --color-sage: #9AB29A;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--color-cream);
+            background-image: url("https://www.transparenttextures.com/patterns/natural-paper.png");
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .serif {
+            font-family: 'Playfair Display', serif;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 8px 32px 0 rgba(95, 112, 83, 0.1);
+        }
+
+        .btn-olive {
+            background-color: var(--color-olive);
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .btn-olive:hover {
+            background-color: #4A5841;
+            transform: translateY(-1px);
+        }
+    </style>
+</head>
+
+<body class="p-4">
+    <div class="max-w-md w-full">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="serif text-4xl mb-2 text-[#4A4B46]">Chill Letter</h1>
+            <p class="text-gray-500 text-sm tracking-widest uppercase">Privacy & Soul Portal</p>
+        </div>
+
+        <!-- Verification Card -->
+        <div class="glass rounded-3xl p-10 text-center animate-fade-in">
+            <div
+                class="w-20 h-20 bg-[#9AB29A] rounded-full mx-auto mb-6 flex items-center justify-center text-white text-3xl">
+                ✓
+            </div>
+            <h2 class="serif text-3xl mb-4 text-[#4A4B46]">Verified!</h2>
+            <p class="text-gray-600 leading-relaxed mb-8">
+                Your email has been successfully verified. You can now continue your journey with Chill Letter.
+            </p>
+        </div>
+    </div>
+</body>
+
+</html>
